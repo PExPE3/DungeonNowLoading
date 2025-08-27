@@ -2,6 +2,7 @@ package dev.hexnowloading.dungeonnowloading;
 
 import dev.hexnowloading.dungeonnowloading.events.DNLFabricBlockEvents;
 import dev.hexnowloading.dungeonnowloading.registry.DNLEntityTypes;
+import dev.hexnowloading.dungeonnowloading.server.DNLFabricVanillaHook;
 import dev.hexnowloading.dungeonnowloading.server.entity.DNLFabricEntities;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
@@ -16,6 +17,7 @@ public class DNLFabric implements ModInitializer {
         registerEntityAttributes();
         registerPackets();
         DNLFabricEntities.registerSpawnPlacements();
+        DNLFabricVanillaHook.setup();
         DungeonNowLoading.LOGGER.info("Hello Fabric world!");
     }
 

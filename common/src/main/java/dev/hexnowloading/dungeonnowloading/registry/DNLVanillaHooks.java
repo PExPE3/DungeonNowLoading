@@ -1,5 +1,6 @@
 package dev.hexnowloading.dungeonnowloading.registry;
 
+import com.google.common.collect.ImmutableSet;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 
@@ -10,12 +11,16 @@ public class DNLVanillaHooks {
 
     private DNLVanillaHooks() {}
 
-    public static void extendSkullValidBlocks() {
+    public static void setup() {
+        extendSkullValidBlocks();
+    }
+
+    private static void extendSkullValidBlocks() {
         // Extend vanilla SKULL valid blocks
-        Set<Block> old = BlockEntityType.SKULL.vali
+        Set<Block> old = BlockEntityType.SKULL.validBlocks;
         Set<Block> plus = new LinkedHashSet<>(old);
         plus.add(DNLBlocks.CHECKPOINT_HEAD.get());
         plus.add(DNLBlocks.CHECKPOINT_WALL_HEAD.get());
-        BlockEntityType.SKULL.validBlocks = ImmutableSet.copyOf(plus);*/
+        BlockEntityType.SKULL.validBlocks = ImmutableSet.copyOf(plus);
     }
 }

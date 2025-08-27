@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "dungeonnowloading:block/checkpoint_head_wall",
+      "y": 270
+    },
+    "facing=north": {
+      "model": "dungeonnowloading:block/checkpoint_head_wall",
+      "y": 180
+    },
+    "facing=south": {
+      "model": "dungeonnowloading:block/checkpoint_head_wall"
+    },
+    "facing=west": {
+      "model": "dungeonnowloading:block/checkpoint_head_wall",
+      "y": 90
+    }
+  }
+}

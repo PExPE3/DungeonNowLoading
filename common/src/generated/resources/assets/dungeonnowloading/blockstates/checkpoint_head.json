@@ -1,0 +1,52 @@
+{
+  "variants": {
+    "rotation=0": {
+      "model": "dungeonnowloading:block/checkpoint_head"
+    },
+    "rotation=1": {
+      "model": "dungeonnowloading:block/checkpoint_head"
+    },
+    "rotation=10": {
+      "model": "dungeonnowloading:block/checkpoint_head"
+    },
+    "rotation=11": {
+      "model": "dungeonnowloading:block/checkpoint_head"
+    },
+    "rotation=12": {
+      "model": "dungeonnowloading:block/checkpoint_head"
+    },
+    "rotation=13": {
+      "model": "dungeonnowloading:block/checkpoint_head"
+    },
+    "rotation=14": {
+      "model": "dungeonnowloading:block/checkpoint_head"
+    },
+    "rotation=15": {
+      "model": "dungeonnowloading:block/checkpoint_head"
+    },
+    "rotation=2": {
+      "model": "dungeonnowloading:block/checkpoint_head"
+    },
+    "rotation=3": {
+      "model": "dungeonnowloading:block/checkpoint_head"
+    },
+    "rotation=4": {
+      "model": "dungeonnowloading:block/checkpoint_head"
+    },
+    "rotation=5": {
+      "model": "dungeonnowloading:block/checkpoint_head"
+    },
+    "rotation=6": {
+      "model": "dungeonnowloading:block/checkpoint_head"
+    },
+    "rotation=7": {
+      "model": "dungeonnowloading:block/checkpoint_head"
+    },
+    "rotation=8": {
+      "model": "dungeonnowloading:block/checkpoint_head"
+    },
+    "rotation=9": {
+      "model": "dungeonnowloading:block/checkpoint_head"
+    }
+  }
+}

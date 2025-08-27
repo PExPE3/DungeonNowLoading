@@ -4,6 +4,7 @@ import dev.hexnowloading.dungeonnowloading.client.DNLForgeClient;
 import dev.hexnowloading.dungeonnowloading.client.DNLForgeClientEvents;
 import dev.hexnowloading.dungeonnowloading.platform.ForgeCommonRegistryHelper;
 import dev.hexnowloading.dungeonnowloading.server.DNLForgeEntityEvents;
+import dev.hexnowloading.dungeonnowloading.server.DNLForgeVanillaHook;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -40,6 +41,7 @@ public class DNLForge {
         ForgeCommonRegistryHelper.TAB_REGISTRY.register(FMLJavaModLoadingContext.get().getModEventBus());
         bus.addListener(DNLForgeEntityEvents::onEntityAttributeCreation);
         bus.addListener(DNLForgeEntityEvents::registerSpawnPlacements);
+        bus.addListener(DNLForgeVanillaHook::onCommonSetup);
     }
 
     private void addModClientListeners(IEventBus bus) {
