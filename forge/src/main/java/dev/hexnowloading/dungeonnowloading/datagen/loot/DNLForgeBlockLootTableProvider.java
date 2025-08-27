@@ -16,10 +16,12 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
+import net.minecraft.world.level.storage.loot.functions.CopyNbtFunction;
 import net.minecraft.world.level.storage.loot.functions.EnchantRandomlyFunction;
 import net.minecraft.world.level.storage.loot.functions.SetItemCountFunction;
 import net.minecraft.world.level.storage.loot.predicates.LootItemBlockStatePropertyCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemRandomChanceCondition;
+import net.minecraft.world.level.storage.loot.providers.nbt.ContextNbtProvider;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
 import net.minecraftforge.registries.RegistryObject;
@@ -90,6 +92,7 @@ public class DNLForgeBlockLootTableProvider extends BlockLootSubProvider {
         this.add(DNLBlocks.REDSTONE_IDOL.get(), block -> createSingleItemTable(DNLItems.REDSTONE_IDOL.get()));
         this.dropSelf(DNLBlocks.LABYRINTH_TROPHY.get());
         this.dropSelf(DNLBlocks.TEMPLE_OF_DUALITY_TROPHY.get());
+        this.addSkullLikeLoot(DNLBlocks.CHECKPOINT_HEAD.get(), DNLBlocks.CHECKPOINT_WALL_HEAD.get(), DNLItems.CHECKPOINT_HEAD.get());
     }
 
     private LootTable.Builder fairkeeperChestBlock(Block block) {
@@ -169,6 +172,20 @@ public class DNLForgeBlockLootTableProvider extends BlockLootSubProvider {
                                         .when(LootItemBlockStatePropertyCondition.hasBlockStateProperties(block)
                                                 .setProperties(StatePropertiesPredicate.Builder.properties().hasProperty(PileBlock.PILE, 4))))
                         )));
+    }
+
+    protected void addSkullLikeLoot(Block head, Block wall, Item dropItem) {
+        var fn = CopyNbtFunction.copyData(ContextNbtProvider.BLOCK_ENTITY)
+                .copy("SkullOwner", "SkullOwner")
+                .copy("display.Lore", "display.Lore");
+
+        add(head, LootTable.lootTable().withPool(
+                LootPool.lootPool().setRolls(ConstantValue.exactly(1))
+                        .add(LootItem.lootTableItem(dropItem).apply(fn))));
+
+        add(wall, LootTable.lootTable().withPool(
+                LootPool.lootPool().setRolls(ConstantValue.exactly(1))
+                        .add(LootItem.lootTableItem(dropItem).apply(fn))));
     }
 
     @Override

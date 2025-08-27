@@ -102,6 +102,8 @@ public class DNLBlocks {
     public static Supplier<Block> MENDING_AURA_PANE;
     public static Supplier<Block> STONE_PRESERVER;
     public static Supplier<Block> REDSTONE_IDOL;
+    public static Supplier<Block> CHECKPOINT_HEAD;
+    public static Supplier<Block> CHECKPOINT_WALL_HEAD;
 
     // Trophies
     public static Supplier<Block> LABYRINTH_TROPHY;// = registerBlock("labyrinth_trophy", () -> new Block(BlockBehaviour.Properties.of().instrument(NoteBlockInstrument.CUSTOM_HEAD).strength(1.0f).pushReaction(PushReaction.DESTROY)));
@@ -191,6 +193,8 @@ public class DNLBlocks {
         MENDING_AURA_PANE = registerBlock("mending_aura_pane", () -> new MendingAuraPaneBlock(BlockBehaviour.Properties.of().mapColor(MapColor.LAPIS).instrument(NoteBlockInstrument.BASEDRUM).strength(-1.0F, 3600000.0F).noOcclusion().pushReaction(PushReaction.IGNORE).noLootTable().emissiveRendering(DNLBlocks::always).lightLevel(lightLevel -> 7)));
         STONE_PRESERVER = registerBlock("stone_preserver", () -> new PreserverBlock(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).instrument(NoteBlockInstrument.BASEDRUM).strength(-1.0F, 3600000.0F).noOcclusion().pushReaction(PushReaction.IGNORE).noLootTable().sound(SoundType.STONE).emissiveRendering(DNLBlocks::always)));
         REDSTONE_IDOL = registerBlock("redstone_idol", () -> new RedstoneIdolBlock(BlockBehaviour.Properties.of().mapColor(MapColor.FIRE).strength(5.0F, 6.0F).sound(SoundType.METAL).requiresCorrectToolForDrops().isRedstoneConductor(DNLBlocks::never).noOcclusion()));
+        CHECKPOINT_HEAD = registerBlock("checkpoint_head", () -> new CheckpointHeadBlock(BlockBehaviour.Properties.of().instrument(NoteBlockInstrument.CUSTOM_HEAD).strength(1.0f).pushReaction(PushReaction.DESTROY)));
+        CHECKPOINT_WALL_HEAD = registerBlock("checkpoint_wall_head", () -> new CheckpointWallHeadBlock(BlockBehaviour.Properties.of().instrument(NoteBlockInstrument.CUSTOM_HEAD).strength(1.0f).pushReaction(PushReaction.DESTROY)));
 
         // Trophies
         LABYRINTH_TROPHY = registerBlock("labyrinth_trophy", () -> new TrophyBlock(BlockBehaviour.Properties.of().instrument(NoteBlockInstrument.CUSTOM_HEAD).strength(1.0f).noOcclusion().pushReaction(PushReaction.DESTROY)));

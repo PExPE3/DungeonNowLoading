@@ -72,6 +72,7 @@ public class DNLForgeBlockStateProvider extends BlockStateProvider {
         redstoneLaneWithItem((RedstoneLaneBlock) DNLBlocks.REDSTONE_LANE_T.get());
         signalGateWithItem((SignalGateBlock) DNLBlocks.SIGNAL_GATE.get());
         preserverWithItem((PreserverBlock) DNLBlocks.STONE_PRESERVER.get());
+        skullLikeBlockWithItem(DNLBlocks.CHECKPOINT_HEAD.get(), DNLBlocks.CHECKPOINT_WALL_HEAD.get(), "checkpoint_head");
 
         //fairkeeperSpawnerWithItem((FairkeeperSpawnerBlock) DNLBlocks.FAIRKEEEPER_SPAWNER.get());
         //simpleRandomBlockWithItem(DNLBlocks.MOSS.get(), 5);
@@ -725,6 +726,42 @@ public class DNLForgeBlockStateProvider extends BlockStateProvider {
 
         simpleBlockItem(block, models().getExistingFile(extend(blockTexture(block), "_off")));
     }
+
+    public void skullLikeBlockWithItem(Block head, Block wall, String itemModelPath) {
+        // Use tiny passthrough models that parent vanilla skull (avoids "does not exist" checks)
+        var headModel = models().getBuilder(modLoc("block/" + itemModelPath).getPath())
+                .parent(new ModelFile.UncheckedModelFile("minecraft:block/skull"));
+        var wallModel = models().getBuilder(modLoc("block/" + itemModelPath + "_wall").getPath())
+                .parent(new ModelFile.UncheckedModelFile("minecraft:block/skull"));
+
+        // Standing skull: DO NOT set rotation here. The BER handles 0..15 rotation.
+        getVariantBuilder(head).forAllStates(s ->
+                ConfiguredModel.builder()
+                        .modelFile(headModel)
+                        .build()
+        );
+
+        // Wall skull: rotate in 90° steps
+        getVariantBuilder(wall).forAllStates(s -> {
+            int y = switch (s.getValue(WallSkullBlock.FACING)) {
+                case NORTH -> 180;
+                case SOUTH -> 0;
+                case WEST  -> 90;
+                case EAST  -> 270;
+                default    -> 0;
+            };
+            return ConfiguredModel.builder()
+                    .modelFile(wallModel)
+                    .rotationY(y)
+                    .build();
+        });
+
+        // Item model uses vanilla skull item template
+        itemModels().getBuilder(itemModelPath)
+                .parent(new ModelFile.UncheckedModelFile("minecraft:item/template_skull"));
+    }
+
+
 
     private ResourceLocation key(Block block) {
         return ForgeRegistries.BLOCKS.getKey(block);
