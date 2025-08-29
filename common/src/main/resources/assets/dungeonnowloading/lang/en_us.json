@@ -184,6 +184,7 @@
   "block.dungeonnowloading.mending_aura_wall": "Mending Aura Wall",
   "block.dungeonnowloading.mending_aura_path": "Mending Aura Path",
   "block.dungeonnowloading.mending_aura_pane": "Mending Aura Pane",
+  "block.dungeonnowloading.checkpoint_head": "Checkpoint Head",
   "death.attack.dungeonnowloading.spike": "%1$s was spiked to death",
   "death.attack.dungeonnowloading.spike.player": "%1$s was spiked to death",
   "entity.dungeonnowloading.chaos_spawner": "Chaos Spawner",

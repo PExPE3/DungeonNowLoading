@@ -3,6 +3,11 @@
   "pools": [
     {
       "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
       "entries": [
         {
           "type": "minecraft:item",
@@ -19,6 +24,11 @@
                   "op": "replace",
                   "source": "display.Lore",
                   "target": "display.Lore"
+                },
+                {
+                  "op": "replace",
+                  "source": "display.Name",
+                  "target": "display.Name"
                 }
               ],
               "source": "block_entity"

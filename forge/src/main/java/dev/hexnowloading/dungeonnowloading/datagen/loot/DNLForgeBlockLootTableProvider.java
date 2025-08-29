@@ -19,6 +19,7 @@ import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.functions.CopyNbtFunction;
 import net.minecraft.world.level.storage.loot.functions.EnchantRandomlyFunction;
 import net.minecraft.world.level.storage.loot.functions.SetItemCountFunction;
+import net.minecraft.world.level.storage.loot.predicates.ExplosionCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemBlockStatePropertyCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemRandomChanceCondition;
 import net.minecraft.world.level.storage.loot.providers.nbt.ContextNbtProvider;
@@ -175,17 +176,29 @@ public class DNLForgeBlockLootTableProvider extends BlockLootSubProvider {
     }
 
     protected void addSkullLikeLoot(Block head, Block wall, Item dropItem) {
-        var fn = CopyNbtFunction.copyData(ContextNbtProvider.BLOCK_ENTITY)
-                .copy("SkullOwner", "SkullOwner")
-                .copy("display.Lore", "display.Lore");
+        CopyNbtFunction.Builder fnHead = CopyNbtFunction.copyData(ContextNbtProvider.BLOCK_ENTITY)
+                .copy("SkullOwner",    "SkullOwner")
+                .copy("display.Lore",  "display.Lore")
+                .copy("display.Name",  "display.Name");
+
+        CopyNbtFunction.Builder fnWall = CopyNbtFunction.copyData(ContextNbtProvider.BLOCK_ENTITY)
+                .copy("SkullOwner",    "SkullOwner")
+                .copy("display.Lore",  "display.Lore")
+                .copy("display.Name",  "display.Name");
 
         add(head, LootTable.lootTable().withPool(
-                LootPool.lootPool().setRolls(ConstantValue.exactly(1))
-                        .add(LootItem.lootTableItem(dropItem).apply(fn))));
+                LootPool.lootPool()
+                        .setRolls(ConstantValue.exactly(1))
+                        .when(ExplosionCondition.survivesExplosion())
+                        .add(LootItem.lootTableItem(dropItem).apply(fnHead))
+        ));
 
         add(wall, LootTable.lootTable().withPool(
-                LootPool.lootPool().setRolls(ConstantValue.exactly(1))
-                        .add(LootItem.lootTableItem(dropItem).apply(fn))));
+                LootPool.lootPool()
+                        .setRolls(ConstantValue.exactly(1))
+                        .when(ExplosionCondition.survivesExplosion())
+                        .add(LootItem.lootTableItem(dropItem).apply(fnWall))
+        ));
     }
 
     @Override
