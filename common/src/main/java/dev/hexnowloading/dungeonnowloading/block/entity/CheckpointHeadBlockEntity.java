@@ -9,6 +9,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.SkullBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -54,38 +55,68 @@ public class CheckpointHeadBlockEntity extends SkullBlockEntity {
         }
     }
 
-    // Persist under the SAME nesting ("display") so loot copy_nbt can copy it back.
     @Override
     protected void saveAdditional(CompoundTag tag) {
         super.saveAdditional(tag);
-        CompoundTag display = tag.getCompound("display");
         if (savedLore != null && !savedLore.isEmpty()) {
-            display.put("Lore", savedLore.copy());
+            tag.put("DNL_Lore", savedLore.copy());
         }
         if (savedNameJson != null && !savedNameJson.isBlank()) {
-            display.putString("Name", savedNameJson);
+            tag.putString("DNL_Name", savedNameJson);
         }
-        if (!display.isEmpty()) tag.put("display", display);
-        if (cosmeticId != null && !cosmeticId.isBlank()) tag.putString("DNL_Cosmetic", cosmeticId);
+        if (cosmeticId != null && !cosmeticId.isBlank()) {
+            tag.putString("DNL_Cosmetic", cosmeticId);
+        }
     }
 
     @Override
     public void load(CompoundTag tag) {
         super.load(tag);
-        if (tag.contains("display", Tag.TAG_COMPOUND)) {
-            CompoundTag display = tag.getCompound("display");
-            savedLore = display.contains("Lore", Tag.TAG_LIST)
-                    ? display.getList("Lore", Tag.TAG_STRING).copy()
-                    : null;
-            savedNameJson = display.contains("Name", Tag.TAG_STRING)
-                    ? display.getString("Name")
-                    : null;
-        } else {
-            savedLore = null;
-            savedNameJson = null;
-        }
-        cosmeticId = tag.contains("DNL_Cosmetic", Tag.TAG_STRING) ? tag.getString("DNL_Cosmetic") : null;
 
+        // Primary: our own keys
+        savedLore = tag.contains("DNL_Lore", Tag.TAG_LIST)
+                ? tag.getList("DNL_Lore", Tag.TAG_STRING).copy() : null;
+        savedNameJson = tag.contains("DNL_Name", Tag.TAG_STRING)
+                ? tag.getString("DNL_Name") : null;
+        cosmeticId = tag.contains("DNL_Cosmetic", Tag.TAG_STRING)
+                ? tag.getString("DNL_Cosmetic") : null;
+
+        // Back-compat: migrate from legacy 'display.*' if present
+        if (savedLore == null || savedNameJson == null) {
+            if (tag.contains("display", Tag.TAG_COMPOUND)) {
+                CompoundTag d = tag.getCompound("display");
+                if (savedLore == null && d.contains("Lore", Tag.TAG_LIST)) {
+                    savedLore = d.getList("Lore", Tag.TAG_STRING).copy();
+                }
+                if (savedNameJson == null && d.contains("Name", Tag.TAG_STRING)) {
+                    savedNameJson = d.getString("Name");
+                }
+                if (savedLore != null || savedNameJson != null) setChanged(); // write back as DNL_* next save
+            }
+        }
+    }
+
+    @Override
+    public CompoundTag getUpdateTag() {
+        CompoundTag tag = super.getUpdateTag(); // vanilla calls saveWithoutMetadata()
+        if (savedLore != null && !savedLore.isEmpty()) tag.put("DNL_Lore", savedLore.copy());
+        if (savedNameJson != null && !savedNameJson.isBlank()) tag.putString("DNL_Name", savedNameJson);
+        if (cosmeticId != null && !cosmeticId.isBlank()) tag.putString("DNL_Cosmetic", cosmeticId);
+        return tag;
+    }
+
+    @org.jetbrains.annotations.Nullable
+    @Override
+    public ClientboundBlockEntityDataPacket getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
+    }
+
+    // Call after you change fields (server side)
+    public void syncToClient() {
+        if (level != null && !level.isClientSide) {
+            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+            setChanged();
+        }
     }
 
     /** Build: [Username] message  (name uses item-name color, message uses lore color) */

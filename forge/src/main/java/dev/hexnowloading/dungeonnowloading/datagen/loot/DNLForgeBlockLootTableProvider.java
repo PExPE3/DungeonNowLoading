@@ -177,15 +177,15 @@ public class DNLForgeBlockLootTableProvider extends BlockLootSubProvider {
 
     protected void addSkullLikeLoot(Block head, Block wall, Item dropItem) {
         CopyNbtFunction.Builder fnHead = CopyNbtFunction.copyData(ContextNbtProvider.BLOCK_ENTITY)
-                .copy("SkullOwner",    "SkullOwner")
-                .copy("display.Lore",  "display.Lore")
-                .copy("display.Name",  "display.Name")
+                .copy("SkullOwner",  "SkullOwner")
+                .copy("DNL_Lore",    "display.Lore")
+                .copy("DNL_Name",    "display.Name")
                 .copy("DNL_Cosmetic","DNL_Cosmetic");
 
         CopyNbtFunction.Builder fnWall = CopyNbtFunction.copyData(ContextNbtProvider.BLOCK_ENTITY)
-                .copy("SkullOwner",    "SkullOwner")
-                .copy("display.Lore",  "display.Lore")
-                .copy("display.Name",  "display.Name")
+                .copy("SkullOwner",  "SkullOwner")
+                .copy("DNL_Lore",    "display.Lore")
+                .copy("DNL_Name",    "display.Name")
                 .copy("DNL_Cosmetic","DNL_Cosmetic");
 
         add(head, LootTable.lootTable().withPool(

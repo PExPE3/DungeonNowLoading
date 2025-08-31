@@ -22,12 +22,12 @@
                 },
                 {
                   "op": "replace",
-                  "source": "display.Lore",
+                  "source": "DNL_Lore",
                   "target": "display.Lore"
                 },
                 {
                   "op": "replace",
-                  "source": "display.Name",
+                  "source": "DNL_Name",
                   "target": "display.Name"
                 },
                 {
