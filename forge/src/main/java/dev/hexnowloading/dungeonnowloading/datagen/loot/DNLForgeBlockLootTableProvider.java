@@ -180,13 +180,15 @@ public class DNLForgeBlockLootTableProvider extends BlockLootSubProvider {
                 .copy("SkullOwner",  "SkullOwner")
                 .copy("DNL_Lore",    "display.Lore")
                 .copy("DNL_Name",    "display.Name")
-                .copy("DNL_Cosmetic","DNL_Cosmetic");
+                .copy("DNL_Cosmetics",     "DNL_Cosmetics")
+                .copy("DNL_CosmeticIdx",   "DNL_CosmeticIdx");
 
         CopyNbtFunction.Builder fnWall = CopyNbtFunction.copyData(ContextNbtProvider.BLOCK_ENTITY)
                 .copy("SkullOwner",  "SkullOwner")
                 .copy("DNL_Lore",    "display.Lore")
                 .copy("DNL_Name",    "display.Name")
-                .copy("DNL_Cosmetic","DNL_Cosmetic");
+                .copy("DNL_Cosmetics",     "DNL_Cosmetics")
+                .copy("DNL_CosmeticIdx",   "DNL_CosmeticIdx");
 
         add(head, LootTable.lootTable().withPool(
                 LootPool.lootPool()

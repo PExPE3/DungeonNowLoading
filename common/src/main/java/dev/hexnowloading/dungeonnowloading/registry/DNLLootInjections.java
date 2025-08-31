@@ -1,6 +1,8 @@
 package dev.hexnowloading.dungeonnowloading.registry;
 
+import dev.hexnowloading.dungeonnowloading.DungeonNowLoading;
 import dev.hexnowloading.dungeonnowloading.platform.Services;
+import dev.hexnowloading.dungeonnowloading.supporter.DNLCheckpointFromPoolFunction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -26,6 +28,13 @@ public class DNLLootInjections {
         // Inject for Temple of Duality
         injectMapLoot(new ResourceLocation("minecraft", "chests/jungle_temple"), DNLTags.TEMPLE_OF_DUALITY, "item.dungeonnowloading.temple_of_duality_map", 0.5f, FAR);
         injectMapLoot(new ResourceLocation("minecraft", "chests/simple_dungeon"), DNLTags.LABYRINTH, "item.dungeonnowloading.labyrinth_map", 1.0f, FAR);
+
+        injectCheckpointHeadLoot(new ResourceLocation(DungeonNowLoading.MOD_ID, "chests/temple_of_duality/fairkeeper_chest/easy_combat"), 0.5f); // 33% chance; tune as you like
+        injectCheckpointHeadLoot(new ResourceLocation(DungeonNowLoading.MOD_ID, "chests/temple_of_duality/fairkeeper_chest/easy_puzzle"), 0.5f);
+        injectCheckpointHeadLoot(new ResourceLocation(DungeonNowLoading.MOD_ID, "chests/temple_of_duality/fairkeeper_chest/normal_combat"), 0.5f);
+        injectCheckpointHeadLoot(new ResourceLocation(DungeonNowLoading.MOD_ID, "chests/temple_of_duality/fairkeeper_chest/normal_puzzle"), 0.5f);
+        injectCheckpointHeadLoot(new ResourceLocation(DungeonNowLoading.MOD_ID, "chests/temple_of_duality/fairkeeper_chest/hard_combat"), 0.5f);
+        injectCheckpointHeadLoot(new ResourceLocation(DungeonNowLoading.MOD_ID, "chests/temple_of_duality/fairkeeper_chest/hard_puzzle"), 0.5f);
     }
 
     public static void injectMapLoot(ResourceLocation lootTable, TagKey<Structure> structureTag, String translationKey, float chance, byte zoom) {
@@ -46,5 +55,18 @@ public class DNLLootInjections {
         Services.LOOT.injectLoot(lootTable, pool);
     }
 
+    public static void injectCheckpointHeadLoot(ResourceLocation lootTable, float chance) {
+        LootPool pool = LootPool.lootPool()
+                .setRolls(ConstantValue.exactly(1))
+                .add(
+                        LootItem.lootTableItem(DNLItems.CHECKPOINT_HEAD.get())
+                                .when(LootItemRandomChanceCondition.randomChance(chance))
+                                // <- this function will replace the plain item with a random patron head
+                                .apply(DNLCheckpointFromPoolFunction.builder())
+                )
+                .build();
+
+        Services.LOOT.injectLoot(lootTable, pool);
+    }
 
 }

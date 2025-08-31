@@ -4,6 +4,7 @@ import com.mojang.authlib.GameProfile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -15,11 +16,16 @@ import net.minecraft.world.level.block.entity.SkullBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CheckpointHeadBlockEntity extends SkullBlockEntity {
     @Nullable private ListTag savedLore;     // JSON strings
     @Nullable private String  savedNameJson; // raw JSON string
     @Nullable String cosmeticId;
+
+    private final List<String> cosmetics = new ArrayList<>();
+    private int cosmeticIdx = -1; // -1 = none
 
     public CheckpointHeadBlockEntity(BlockPos pos, BlockState state) { super(pos, state); }
     public CheckpointHeadBlockEntity(BlockPos pos, BlockState state, GameProfile owner) {
@@ -58,50 +64,51 @@ public class CheckpointHeadBlockEntity extends SkullBlockEntity {
     @Override
     protected void saveAdditional(CompoundTag tag) {
         super.saveAdditional(tag);
-        if (savedLore != null && !savedLore.isEmpty()) {
-            tag.put("DNL_Lore", savedLore.copy());
-        }
-        if (savedNameJson != null && !savedNameJson.isBlank()) {
-            tag.putString("DNL_Name", savedNameJson);
-        }
-        if (cosmeticId != null && !cosmeticId.isBlank()) {
-            tag.putString("DNL_Cosmetic", cosmeticId);
-        }
+
+        if (savedLore != null && !savedLore.isEmpty()) tag.put("DNL_Lore", savedLore.copy());
+        if (savedNameJson != null && !savedNameJson.isBlank()) tag.putString("DNL_Name", savedNameJson);
+
+        // NEW: write cosmetics list + index
+        ListTag list = new ListTag();
+        for (String id : cosmetics) list.add(StringTag.valueOf(id));
+        if (!list.isEmpty()) tag.put("DNL_Cosmetics", list);
+        tag.putInt("DNL_CosmeticIdx", cosmeticIdx);
     }
 
     @Override
     public void load(CompoundTag tag) {
         super.load(tag);
 
-        // Primary: our own keys
-        savedLore = tag.contains("DNL_Lore", Tag.TAG_LIST)
-                ? tag.getList("DNL_Lore", Tag.TAG_STRING).copy() : null;
-        savedNameJson = tag.contains("DNL_Name", Tag.TAG_STRING)
-                ? tag.getString("DNL_Name") : null;
-        cosmeticId = tag.contains("DNL_Cosmetic", Tag.TAG_STRING)
-                ? tag.getString("DNL_Cosmetic") : null;
+        // Name/Lore (as you had)
+        savedLore = tag.contains("DNL_Lore", Tag.TAG_LIST) ? tag.getList("DNL_Lore", Tag.TAG_STRING).copy() : null;
+        savedNameJson = tag.contains("DNL_Name", Tag.TAG_STRING) ? tag.getString("DNL_Name") : null;
 
-        // Back-compat: migrate from legacy 'display.*' if present
-        if (savedLore == null || savedNameJson == null) {
-            if (tag.contains("display", Tag.TAG_COMPOUND)) {
-                CompoundTag d = tag.getCompound("display");
-                if (savedLore == null && d.contains("Lore", Tag.TAG_LIST)) {
-                    savedLore = d.getList("Lore", Tag.TAG_STRING).copy();
-                }
-                if (savedNameJson == null && d.contains("Name", Tag.TAG_STRING)) {
-                    savedNameJson = d.getString("Name");
-                }
-                if (savedLore != null || savedNameJson != null) setChanged(); // write back as DNL_* next save
-            }
+        // NEW: read cosmetics list + index
+        cosmetics.clear();
+        if (tag.contains("DNL_Cosmetics", Tag.TAG_LIST)) {
+            ListTag list = tag.getList("DNL_Cosmetics", Tag.TAG_STRING);
+            for (int i = 0; i < list.size(); i++) cosmetics.add(list.getString(i));
+        } else if (tag.contains("DNL_Cosmetic", Tag.TAG_STRING)) {
+            // migrate legacy single cosmetic
+            String one = tag.getString("DNL_Cosmetic").trim();
+            if (!one.isEmpty()) cosmetics.add(one);
         }
+        cosmeticIdx = tag.getInt("DNL_CosmeticIdx");
+        if (cosmetics.isEmpty()) cosmeticIdx = -1;
+        else if (cosmeticIdx < 0 || cosmeticIdx >= cosmetics.size()) cosmeticIdx = 0;
     }
+
 
     @Override
     public CompoundTag getUpdateTag() {
-        CompoundTag tag = super.getUpdateTag(); // vanilla calls saveWithoutMetadata()
+        CompoundTag tag = super.getUpdateTag();
         if (savedLore != null && !savedLore.isEmpty()) tag.put("DNL_Lore", savedLore.copy());
         if (savedNameJson != null && !savedNameJson.isBlank()) tag.putString("DNL_Name", savedNameJson);
-        if (cosmeticId != null && !cosmeticId.isBlank()) tag.putString("DNL_Cosmetic", cosmeticId);
+
+        ListTag list = new ListTag();
+        for (String id : cosmetics) list.add(StringTag.valueOf(id));
+        if (!list.isEmpty()) tag.put("DNL_Cosmetics", list);
+        tag.putInt("DNL_CosmeticIdx", cosmeticIdx);
         return tag;
     }
 
@@ -213,20 +220,60 @@ public class CheckpointHeadBlockEntity extends SkullBlockEntity {
         return out;
     }
 
-    public void setCosmeticFromItem(ItemStack stack) {
+    public void setCosmeticsFromItem(ItemStack stack) {
         var tag = stack.getTag();
-        if (tag != null && tag.contains("DNL_Cosmetic", Tag.TAG_STRING)) {
-            String id = tag.getString("DNL_Cosmetic").trim();
-            cosmeticId = id.isEmpty() ? null : id;
-            setChanged();
+        if (tag == null) return;
+
+        // Prefer list
+        if (tag.contains("DNL_Cosmetics", Tag.TAG_LIST)) {
+            cosmetics.clear();
+            ListTag list = tag.getList("DNL_Cosmetics", Tag.TAG_STRING);
+            for (int i = 0; i < list.size(); i++) cosmetics.add(list.getString(i));
+            cosmeticIdx = Math.max(0, Math.min(tag.getInt("DNL_CosmeticIdx"), cosmetics.size() - 1));
+        } else if (tag.contains("DNL_Cosmetic", Tag.TAG_STRING)) {
+            cosmetics.clear();
+            String one = tag.getString("DNL_Cosmetic").trim();
+            if (!one.isEmpty()) cosmetics.add(one);
+            cosmeticIdx = cosmetics.isEmpty() ? -1 : 0;
         }
+        setChanged();
     }
 
     // --- BE -> item on drop/pick ---
-    public void writeCosmeticToItem(ItemStack stack) {
-        if (cosmeticId != null && !cosmeticId.isBlank()) {
-            stack.getOrCreateTag().putString("DNL_Cosmetic", cosmeticId);
+    public void writeCosmeticsToItem(ItemStack stack) {
+        ListTag list = new ListTag();
+        for (String id : cosmetics) list.add(StringTag.valueOf(id));
+        if (!list.isEmpty()) {
+            stack.getOrCreateTag().put("DNL_Cosmetics", list);
+            stack.getOrCreateTag().putInt("DNL_CosmeticIdx", cosmeticIdx);
         }
+    }
+
+    public @Nullable String getActiveCosmeticId() {
+        return (cosmeticIdx >= 0 && cosmeticIdx < cosmetics.size()) ? cosmetics.get(cosmeticIdx) : null;
+    }
+    public List<String> getCosmetics() { return cosmetics; }
+
+    /** Add if not present; set active if this is the first. */
+    public boolean addCosmetic(String id) {
+        if (id == null || id.isBlank()) return false;
+        String norm = id.trim();
+        if (!cosmetics.contains(norm)) {
+            cosmetics.add(norm);
+            if (cosmeticIdx < 0) cosmeticIdx = 0;
+            setChanged();
+            return true;
+        }
+        return false;
+    }
+
+    /** Cycle to next cosmetic (server side), return true if changed. */
+    public boolean cycleCosmetic() {
+        if (cosmetics.isEmpty()) return false;
+        cosmeticIdx = (cosmeticIdx + 1) % cosmetics.size();
+        setChanged();
+        syncToClient();
+        return true;
     }
 
     @Nullable public String getCosmeticId() { return cosmeticId; }

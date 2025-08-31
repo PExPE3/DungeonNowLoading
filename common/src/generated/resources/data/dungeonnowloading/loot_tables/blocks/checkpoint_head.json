@@ -32,8 +32,13 @@
                 },
                 {
                   "op": "replace",
-                  "source": "DNL_Cosmetic",
-                  "target": "DNL_Cosmetic"
+                  "source": "DNL_Cosmetics",
+                  "target": "DNL_Cosmetics"
+                },
+                {
+                  "op": "replace",
+                  "source": "DNL_CosmeticIdx",
+                  "target": "DNL_CosmeticIdx"
                 }
               ],
               "source": "block_entity"

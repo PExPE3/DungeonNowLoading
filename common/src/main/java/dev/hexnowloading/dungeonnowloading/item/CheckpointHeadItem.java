@@ -22,7 +22,7 @@ public class CheckpointHeadItem extends PlayerHeadItem {
             var be = level.getBlockEntity(pos);
             if (be instanceof CheckpointHeadBlockEntity head) {
                 head.setDisplayFromItem(stack);
-                head.setCosmeticFromItem(stack);
+                head.setCosmeticsFromItem(stack);
                 changed = true;
             }
         }

@@ -3,6 +3,7 @@ package dev.hexnowloading.dungeonnowloading;
 import dev.hexnowloading.dungeonnowloading.config.DNLClientConfig;
 import dev.hexnowloading.dungeonnowloading.config.DNLServerConfig;
 import dev.hexnowloading.dungeonnowloading.registry.*;
+import dev.hexnowloading.dungeonnowloading.supporter.DNLCheckpointHeads;
 import dev.hexnowloading.dungeonnowloading.supporter.DNLSupporters;
 import net.minecraft.resources.ResourceLocation;
 import org.slf4j.Logger;
@@ -37,7 +38,9 @@ public class DungeonNowLoading {
         DNLProcessors.init();
         DNLCreativeModeTabs.init();
         DNLGameEvents.init();
+        DNLLootFunctions.CHECKPOINT_FROM_POOL.get();
         DNLLootInjections.setup();
+        DNLCheckpointHeads.loadTempleHeads();
         DNLSupporters.loadSupporters();
     }
 

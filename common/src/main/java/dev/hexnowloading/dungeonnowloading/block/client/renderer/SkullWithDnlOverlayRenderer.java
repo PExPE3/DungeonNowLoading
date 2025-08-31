@@ -6,6 +6,7 @@ import dev.hexnowloading.dungeonnowloading.DungeonNowLoading;
 import dev.hexnowloading.dungeonnowloading.block.client.model.checkpoint_head_cosmetics.CHScuttleCrownModel;
 import dev.hexnowloading.dungeonnowloading.block.client.model.checkpoint_head_cosmetics.ICheckpointCosmetic;
 import dev.hexnowloading.dungeonnowloading.block.client.model.checkpoint_head_cosmetics.aura_only.CHFlameAura;
+import dev.hexnowloading.dungeonnowloading.block.entity.CheckpointHeadBlockEntity;
 import dev.hexnowloading.dungeonnowloading.registry.DNLBlocks;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -43,7 +44,8 @@ public class SkullWithDnlOverlayRenderer implements BlockEntityRenderer<SkullBlo
         // 2) cosmetic lookup (null-safe + trim)
         String cosmeticRaw = (be instanceof dev.hexnowloading.dungeonnowloading.block.entity.CheckpointHeadBlockEntity ch)
                 ? ch.getCosmeticId() : null;
-        String cosmetic = cosmeticRaw == null ? null : cosmeticRaw.trim();
+        String cosmetic = (be instanceof CheckpointHeadBlockEntity ch) ? ch.getActiveCosmeticId() : null;
+
 
         ICheckpointCosmetic cosmeticModel = null;
         boolean drawCrown = false;
