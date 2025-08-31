@@ -70,6 +70,7 @@ public class CheckpointWallHeadBlock extends PlayerWallHeadBlock implements Enti
         BlockEntity be = level.getBlockEntity(pos);
         if (be instanceof CheckpointHeadBlockEntity head) {
             head.writeDisplayToItem(stack);
+            head.writeCosmeticToItem(stack);
         }
         return stack;
     }

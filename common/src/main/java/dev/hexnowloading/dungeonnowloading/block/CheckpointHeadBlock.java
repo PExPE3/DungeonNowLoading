@@ -45,6 +45,7 @@ public class CheckpointHeadBlock extends PlayerHeadBlock implements EntityBlock 
         BlockEntity be = level.getBlockEntity(pos);
         if (be instanceof CheckpointHeadBlockEntity head) {
             head.writeDisplayToItem(stack);   // <— writes Name + Lore back
+            head.writeCosmeticToItem(stack);
         }
         return stack;
     }

@@ -17,8 +17,8 @@ import javax.annotation.Nullable;
 
 public class CheckpointHeadBlockEntity extends SkullBlockEntity {
     @Nullable private ListTag savedLore;     // JSON strings
-    @Nullable
-    private String  savedNameJson; // raw JSON string
+    @Nullable private String  savedNameJson; // raw JSON string
+    @Nullable String cosmeticId;
 
     public CheckpointHeadBlockEntity(BlockPos pos, BlockState state) { super(pos, state); }
     public CheckpointHeadBlockEntity(BlockPos pos, BlockState state, GameProfile owner) {
@@ -66,6 +66,7 @@ public class CheckpointHeadBlockEntity extends SkullBlockEntity {
             display.putString("Name", savedNameJson);
         }
         if (!display.isEmpty()) tag.put("display", display);
+        if (cosmeticId != null && !cosmeticId.isBlank()) tag.putString("DNL_Cosmetic", cosmeticId);
     }
 
     @Override
@@ -83,6 +84,8 @@ public class CheckpointHeadBlockEntity extends SkullBlockEntity {
             savedLore = null;
             savedNameJson = null;
         }
+        cosmeticId = tag.contains("DNL_Cosmetic", Tag.TAG_STRING) ? tag.getString("DNL_Cosmetic") : null;
+
     }
 
     /** Build: [Username] message  (name uses item-name color, message uses lore color) */
@@ -178,4 +181,23 @@ public class CheckpointHeadBlockEntity extends SkullBlockEntity {
         }
         return out;
     }
+
+    public void setCosmeticFromItem(ItemStack stack) {
+        var tag = stack.getTag();
+        if (tag != null && tag.contains("DNL_Cosmetic", Tag.TAG_STRING)) {
+            String id = tag.getString("DNL_Cosmetic").trim();
+            cosmeticId = id.isEmpty() ? null : id;
+            setChanged();
+        }
+    }
+
+    // --- BE -> item on drop/pick ---
+    public void writeCosmeticToItem(ItemStack stack) {
+        if (cosmeticId != null && !cosmeticId.isBlank()) {
+            stack.getOrCreateTag().putString("DNL_Cosmetic", cosmeticId);
+        }
+    }
+
+    @Nullable public String getCosmeticId() { return cosmeticId; }
+    public boolean hasCosmetic() { return cosmeticId != null && !cosmeticId.isBlank(); }
 }

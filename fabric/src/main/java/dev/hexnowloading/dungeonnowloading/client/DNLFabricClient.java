@@ -2,6 +2,7 @@ package dev.hexnowloading.dungeonnowloading.client;
 
 import dev.hexnowloading.dungeonnowloading.block.client.model.DisabledFairkeeperChestModel;
 import dev.hexnowloading.dungeonnowloading.block.client.model.FairkeeperChestModel;
+import dev.hexnowloading.dungeonnowloading.block.client.model.checkpoint_head_cosmetics.CHScuttleCrownModel;
 import dev.hexnowloading.dungeonnowloading.block.client.renderer.*;
 import dev.hexnowloading.dungeonnowloading.entity.client.model.*;
 import dev.hexnowloading.dungeonnowloading.entity.client.model.copper_creep.CopperCreepButlerModel;
@@ -23,6 +24,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 
 public class DNLFabricClient implements ClientModInitializer {
     @Override
@@ -32,8 +34,8 @@ public class DNLFabricClient implements ClientModInitializer {
         registerItemModelLayers();
         registerItemRenderers();
         registerBlockRenderers();
-        registerRenderers();
         registerModelLayers();
+        registerRenderers();
         registerParticleFactories();
     }
 
@@ -127,6 +129,7 @@ public class DNLFabricClient implements ClientModInitializer {
         // Block Entities
         BlockEntityRenderers.register(DNLBlockEntityTypes.FAIRKEEPER_CHEST.get(), FairkeeperChestBlockRenderer::new);
         BlockEntityRenderers.register(DNLBlockEntityTypes.DISABLED_FAIRKEEPER_CHEST.get(), DisabledFairkeeperChestBlockRenderer::new);
+        BlockEntityRenderers.register(BlockEntityType.SKULL, ctx -> new SkullWithDnlOverlayRenderer(ctx));
 
         // Item Properties
         ItemProperties.register(DNLItems.VERTEX_BOW.get(), new ResourceLocation("pull"), (stack, level, entity, idk) -> {
@@ -181,6 +184,7 @@ public class DNLFabricClient implements ClientModInitializer {
         // Block Entities
         EntityModelLayerRegistry.registerModelLayer(FairkeeperChestModel.LAYER_LOCATION, FairkeeperChestModel::createBodyLayer);
         EntityModelLayerRegistry.registerModelLayer(DisabledFairkeeperChestModel.LAYER_LOCATION, DisabledFairkeeperChestModel::createBodyLayer);
+        EntityModelLayerRegistry.registerModelLayer(CHScuttleCrownModel.LAYER_LOCATION, CHScuttleCrownModel::createBodyLayer);
     }
 
     private static void registerParticleFactories() {

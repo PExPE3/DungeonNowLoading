@@ -29,6 +29,11 @@
                   "op": "replace",
                   "source": "display.Name",
                   "target": "display.Name"
+                },
+                {
+                  "op": "replace",
+                  "source": "DNL_Cosmetic",
+                  "target": "DNL_Cosmetic"
                 }
               ],
               "source": "block_entity"
